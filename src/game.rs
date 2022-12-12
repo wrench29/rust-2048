@@ -66,8 +66,6 @@ impl Game2048 {
         let values = vec![2, 4];
         let value = values.choose(&mut self.rng).unwrap();
 
-        println!("{cell_x} {cell_y}");
-
         self.playground[*cell_x][*cell_y] = *value;
     }
     fn can_move_in_direction(&self, move_direction: MoveDirection) -> bool {
