@@ -77,25 +77,31 @@ fn main() -> Result<(), String> {
     let (tile_x_3, tile_y_3) = calc_rectangle_position(2, 2, canvas_width, is_high_dpi);
     let (tile_x_4, tile_y_4) = calc_rectangle_position(3, 3, canvas_width, is_high_dpi);
 
-    let tile00_rectangle = rect!(tile_x_1, tile_y_1, SQUARE_SIZE, SQUARE_SIZE);
-    let tile01_rectangle = rect!(tile_x_1, tile_y_2, SQUARE_SIZE, SQUARE_SIZE);
-    let tile02_rectangle = rect!(tile_x_1, tile_y_3, SQUARE_SIZE, SQUARE_SIZE);
-    let tile03_rectangle = rect!(tile_x_1, tile_y_4, SQUARE_SIZE, SQUARE_SIZE);
+    let square_size = if is_high_dpi {
+        SQUARE_SIZE
+    } else {
+        SQUARE_SIZE / 2
+    };
 
-    let tile10_rectangle = rect!(tile_x_2, tile_y_1, SQUARE_SIZE, SQUARE_SIZE);
-    let tile11_rectangle = rect!(tile_x_2, tile_y_2, SQUARE_SIZE, SQUARE_SIZE);
-    let tile12_rectangle = rect!(tile_x_2, tile_y_3, SQUARE_SIZE, SQUARE_SIZE);
-    let tile13_rectangle = rect!(tile_x_2, tile_y_4, SQUARE_SIZE, SQUARE_SIZE);
+    let tile00_rectangle = rect!(tile_x_1, tile_y_1, square_size, square_size);
+    let tile01_rectangle = rect!(tile_x_1, tile_y_2, square_size, square_size);
+    let tile02_rectangle = rect!(tile_x_1, tile_y_3, square_size, square_size);
+    let tile03_rectangle = rect!(tile_x_1, tile_y_4, square_size, square_size);
 
-    let tile20_rectangle = rect!(tile_x_3, tile_y_1, SQUARE_SIZE, SQUARE_SIZE);
-    let tile21_rectangle = rect!(tile_x_3, tile_y_2, SQUARE_SIZE, SQUARE_SIZE);
-    let tile22_rectangle = rect!(tile_x_3, tile_y_3, SQUARE_SIZE, SQUARE_SIZE);
-    let tile23_rectangle = rect!(tile_x_3, tile_y_4, SQUARE_SIZE, SQUARE_SIZE);
+    let tile10_rectangle = rect!(tile_x_2, tile_y_1, square_size, square_size);
+    let tile11_rectangle = rect!(tile_x_2, tile_y_2, square_size, square_size);
+    let tile12_rectangle = rect!(tile_x_2, tile_y_3, square_size, square_size);
+    let tile13_rectangle = rect!(tile_x_2, tile_y_4, square_size, square_size);
 
-    let tile30_rectangle = rect!(tile_x_4, tile_y_1, SQUARE_SIZE, SQUARE_SIZE);
-    let tile31_rectangle = rect!(tile_x_4, tile_y_2, SQUARE_SIZE, SQUARE_SIZE);
-    let tile32_rectangle = rect!(tile_x_4, tile_y_3, SQUARE_SIZE, SQUARE_SIZE);
-    let tile33_rectangle = rect!(tile_x_4, tile_y_4, SQUARE_SIZE, SQUARE_SIZE);
+    let tile20_rectangle = rect!(tile_x_3, tile_y_1, square_size, square_size);
+    let tile21_rectangle = rect!(tile_x_3, tile_y_2, square_size, square_size);
+    let tile22_rectangle = rect!(tile_x_3, tile_y_3, square_size, square_size);
+    let tile23_rectangle = rect!(tile_x_3, tile_y_4, square_size, square_size);
+
+    let tile30_rectangle = rect!(tile_x_4, tile_y_1, square_size, square_size);
+    let tile31_rectangle = rect!(tile_x_4, tile_y_2, square_size, square_size);
+    let tile32_rectangle = rect!(tile_x_4, tile_y_3, square_size, square_size);
+    let tile33_rectangle = rect!(tile_x_4, tile_y_4, square_size, square_size);
 
     let mut event_pump = sdl_context.event_pump()?;
     'running: loop {
