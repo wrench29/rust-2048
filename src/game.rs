@@ -39,6 +39,7 @@ impl Game2048 {
     }
     pub fn start(&mut self) {
         assert!(matches!(self.game_state, GameState::WaitingForStart));
+        self.game_state = GameState::Playing;
         self.generate_and_place_random_block();
     }
     pub fn update(&mut self, move_direction: MoveDirection) {
@@ -73,6 +74,8 @@ impl Game2048 {
         let (cell_x, cell_y) = available_cells.choose(&mut self.rng).unwrap();
         let values = vec![2, 4];
         let value = values.choose(&mut self.rng).unwrap();
+
+        println!("{cell_x} {cell_y}");
 
         self.playground[*cell_x][*cell_y] = *value;
     }

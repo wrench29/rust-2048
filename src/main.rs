@@ -9,6 +9,7 @@ use sdl2::rect::Rect;
 use sdl2::render::{Texture, TextureCreator, TextureQuery};
 use sdl2::ttf::Font;
 use sdl2::video::WindowContext;
+use std::collections::HashMap;
 use std::thread::sleep;
 use std::time::Duration;
 
@@ -51,7 +52,8 @@ fn main() -> Result<(), String> {
     let font = ttf_context.load_font(FONT_NAME, font_size).unwrap();
     // End of initialization
 
-    let game = game::Game2048::new();
+    let mut game = game::Game2048::new();
+    game.start();
 
     let text = "The 2048";
     let (texture, mut rectangle) = create_text(&texture_creator, &font, text, (20, 20));
@@ -64,25 +66,53 @@ fn main() -> Result<(), String> {
         "assets/"
     };
 
-    let tile_2_texture = texture_creator.load_texture(format!("{tiles_assets_path}2-tile.png"))?;
-    let tile_4_texture = texture_creator.load_texture(format!("{tiles_assets_path}4-tile.png"))?;
-    let tile_8_texture = texture_creator.load_texture(format!("{tiles_assets_path}8-tile.png"))?;
-    let tile_16_texture =
-        texture_creator.load_texture(format!("{tiles_assets_path}16-tile.png"))?;
-    let tile_32_texture =
-        texture_creator.load_texture(format!("{tiles_assets_path}32-tile.png"))?;
-    let tile_64_texture =
-        texture_creator.load_texture(format!("{tiles_assets_path}64-tile.png"))?;
-    let tile_128_texture =
-        texture_creator.load_texture(format!("{tiles_assets_path}128-tile.png"))?;
-    let tile_256_texture =
-        texture_creator.load_texture(format!("{tiles_assets_path}256-tile.png"))?;
-    let tile_512_texture =
-        texture_creator.load_texture(format!("{tiles_assets_path}512-tile.png"))?;
-    let tile_1024_texture =
-        texture_creator.load_texture(format!("{tiles_assets_path}1024-tile.png"))?;
-    let tile_2048_texture =
-        texture_creator.load_texture(format!("{tiles_assets_path}2048-tile.png"))?;
+    let mut tiles_textures = HashMap::<i32, Texture>::new();
+
+    tiles_textures.insert(
+        2,
+        texture_creator.load_texture(format!("{tiles_assets_path}2-tile.png"))?,
+    );
+    tiles_textures.insert(
+        4,
+        texture_creator.load_texture(format!("{tiles_assets_path}4-tile.png"))?,
+    );
+    tiles_textures.insert(
+        8,
+        texture_creator.load_texture(format!("{tiles_assets_path}8-tile.png"))?,
+    );
+    tiles_textures.insert(
+        16,
+        texture_creator.load_texture(format!("{tiles_assets_path}16-tile.png"))?,
+    );
+    tiles_textures.insert(
+        32,
+        texture_creator.load_texture(format!("{tiles_assets_path}32-tile.png"))?,
+    );
+    tiles_textures.insert(
+        64,
+        texture_creator.load_texture(format!("{tiles_assets_path}64-tile.png"))?,
+    );
+    tiles_textures.insert(
+        128,
+        texture_creator.load_texture(format!("{tiles_assets_path}128-tile.png"))?,
+    );
+    tiles_textures.insert(
+        256,
+        texture_creator.load_texture(format!("{tiles_assets_path}256-tile.png"))?,
+    );
+    tiles_textures.insert(
+        512,
+        texture_creator.load_texture(format!("{tiles_assets_path}512-tile.png"))?,
+    );
+    tiles_textures.insert(
+        1024,
+        texture_creator.load_texture(format!("{tiles_assets_path}1024-tile.png"))?,
+    );
+    tiles_textures.insert(
+        2048,
+        texture_creator.load_texture(format!("{tiles_assets_path}2048-tile.png"))?,
+    );
+
     let tiles_background_texture =
         texture_creator.load_texture(format!("{tiles_assets_path}tiles_background.png"))?;
 
@@ -99,25 +129,31 @@ fn main() -> Result<(), String> {
         SQUARE_SIZE / 2
     };
 
-    let tile00_rectangle = rect!(tile_x_1, tile_y_1, square_size, square_size);
-    let tile01_rectangle = rect!(tile_x_1, tile_y_2, square_size, square_size);
-    let tile02_rectangle = rect!(tile_x_1, tile_y_3, square_size, square_size);
-    let tile03_rectangle = rect!(tile_x_1, tile_y_4, square_size, square_size);
+    let mut tiles_rectangles: Vec<Vec<Rect>> = Vec::<Vec<Rect>>::new();
 
-    let tile10_rectangle = rect!(tile_x_2, tile_y_1, square_size, square_size);
-    let tile11_rectangle = rect!(tile_x_2, tile_y_2, square_size, square_size);
-    let tile12_rectangle = rect!(tile_x_2, tile_y_3, square_size, square_size);
-    let tile13_rectangle = rect!(tile_x_2, tile_y_4, square_size, square_size);
+    for _ in 0..4 {
+        tiles_rectangles.push(Vec::<Rect>::new());
+    }
 
-    let tile20_rectangle = rect!(tile_x_3, tile_y_1, square_size, square_size);
-    let tile21_rectangle = rect!(tile_x_3, tile_y_2, square_size, square_size);
-    let tile22_rectangle = rect!(tile_x_3, tile_y_3, square_size, square_size);
-    let tile23_rectangle = rect!(tile_x_3, tile_y_4, square_size, square_size);
+    tiles_rectangles[0].push(rect!(tile_x_1, tile_y_1, square_size, square_size));
+    tiles_rectangles[0].push(rect!(tile_x_1, tile_y_2, square_size, square_size));
+    tiles_rectangles[0].push(rect!(tile_x_1, tile_y_3, square_size, square_size));
+    tiles_rectangles[0].push(rect!(tile_x_1, tile_y_4, square_size, square_size));
 
-    let tile30_rectangle = rect!(tile_x_4, tile_y_1, square_size, square_size);
-    let tile31_rectangle = rect!(tile_x_4, tile_y_2, square_size, square_size);
-    let tile32_rectangle = rect!(tile_x_4, tile_y_3, square_size, square_size);
-    let tile33_rectangle = rect!(tile_x_4, tile_y_4, square_size, square_size);
+    tiles_rectangles[1].push(rect!(tile_x_2, tile_y_1, square_size, square_size));
+    tiles_rectangles[1].push(rect!(tile_x_2, tile_y_2, square_size, square_size));
+    tiles_rectangles[1].push(rect!(tile_x_2, tile_y_3, square_size, square_size));
+    tiles_rectangles[1].push(rect!(tile_x_2, tile_y_4, square_size, square_size));
+
+    tiles_rectangles[2].push(rect!(tile_x_3, tile_y_1, square_size, square_size));
+    tiles_rectangles[2].push(rect!(tile_x_3, tile_y_2, square_size, square_size));
+    tiles_rectangles[2].push(rect!(tile_x_3, tile_y_3, square_size, square_size));
+    tiles_rectangles[2].push(rect!(tile_x_3, tile_y_4, square_size, square_size));
+
+    tiles_rectangles[3].push(rect!(tile_x_4, tile_y_1, square_size, square_size));
+    tiles_rectangles[3].push(rect!(tile_x_4, tile_y_2, square_size, square_size));
+    tiles_rectangles[3].push(rect!(tile_x_4, tile_y_3, square_size, square_size));
+    tiles_rectangles[3].push(rect!(tile_x_4, tile_y_4, square_size, square_size));
 
     let tiles_background_rectangle = calc_tiles_background_rectangle(canvas_width, is_high_dpi);
 
@@ -146,25 +182,19 @@ fn main() -> Result<(), String> {
 
         canvas.copy(&tiles_background_texture, None, tiles_background_rectangle)?;
 
-        canvas.copy(&tile_2_texture, None, tile00_rectangle)?;
-        canvas.copy(&tile_4_texture, None, tile01_rectangle)?;
-        canvas.copy(&tile_8_texture, None, tile02_rectangle)?;
-        canvas.copy(&tile_16_texture, None, tile03_rectangle)?;
-
-        canvas.copy(&tile_32_texture, None, tile10_rectangle)?;
-        canvas.copy(&tile_64_texture, None, tile11_rectangle)?;
-        canvas.copy(&tile_128_texture, None, tile12_rectangle)?;
-        canvas.copy(&tile_256_texture, None, tile13_rectangle)?;
-
-        canvas.copy(&tile_512_texture, None, tile20_rectangle)?;
-        canvas.copy(&tile_1024_texture, None, tile21_rectangle)?;
-        canvas.copy(&tile_2048_texture, None, tile22_rectangle)?;
-        canvas.copy(&tile_2_texture, None, tile23_rectangle)?;
-
-        canvas.copy(&tile_4_texture, None, tile30_rectangle)?;
-        canvas.copy(&tile_8_texture, None, tile31_rectangle)?;
-        canvas.copy(&tile_16_texture, None, tile32_rectangle)?;
-        canvas.copy(&tile_32_texture, None, tile33_rectangle)?;
+        for x in 0..4 {
+            for y in 0..4 {
+                let val = game.get_cell(x, y);
+                if val == 0 {
+                    continue;
+                }
+                canvas.copy(
+                    tiles_textures.get(&val).unwrap(),
+                    None,
+                    tiles_rectangles[x][y],
+                )?;
+            }
+        }
 
         canvas.present();
         sleep(Duration::new(0, 1_000_000_000u32 / 60));
