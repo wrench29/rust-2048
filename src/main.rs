@@ -172,6 +172,13 @@ fn main() -> Result<(), String> {
                     keycode: Some(Keycode::Escape),
                     ..
                 } => break 'running,
+                Event::KeyDown { keycode, .. } => match keycode {
+                    Some(Keycode::W) => game.update(game::MoveDirection::Top),
+                    Some(Keycode::A) => game.update(game::MoveDirection::Left),
+                    Some(Keycode::S) => game.update(game::MoveDirection::Bottom),
+                    Some(Keycode::D) => game.update(game::MoveDirection::Right),
+                    _ => {}
+                },
                 _ => {}
             }
         }
