@@ -20,7 +20,7 @@ macro_rules! rect(
     )
 );
 
-static FONT_NAME: &str = "assets/Helvetica.ttf";
+static FONT_NAME: &str = "assets/fonts/Helvetica.ttf";
 
 static WINDOW_WIDTH: u32 = 800;
 static WINDOW_HEIGHT: u32 = 600;
@@ -58,17 +58,31 @@ fn main() -> Result<(), String> {
 
     rectangle.x = (canvas.viewport().width() as i32 - rectangle.width() as i32) / 2;
 
-    let tile_2_texture = texture_creator.load_texture("assets/2-tile.png")?;
-    let tile_4_texture = texture_creator.load_texture("assets/4-tile.png")?;
-    let tile_8_texture = texture_creator.load_texture("assets/8-tile.png")?;
-    let tile_16_texture = texture_creator.load_texture("assets/16-tile.png")?;
-    let tile_32_texture = texture_creator.load_texture("assets/32-tile.png")?;
-    let tile_64_texture = texture_creator.load_texture("assets/64-tile.png")?;
-    let tile_128_texture = texture_creator.load_texture("assets/128-tile.png")?;
-    let tile_256_texture = texture_creator.load_texture("assets/256-tile.png")?;
-    let tile_512_texture = texture_creator.load_texture("assets/512-tile.png")?;
-    let tile_1024_texture = texture_creator.load_texture("assets/1024-tile.png")?;
-    let tile_2048_texture = texture_creator.load_texture("assets/2048-tile.png")?;
+    let tiles_assets_path = if is_high_dpi {
+        "assets/highdpi/"
+    } else {
+        "assets/"
+    };
+
+    let tile_2_texture = texture_creator.load_texture(format!("{tiles_assets_path}2-tile.png"))?;
+    let tile_4_texture = texture_creator.load_texture(format!("{tiles_assets_path}4-tile.png"))?;
+    let tile_8_texture = texture_creator.load_texture(format!("{tiles_assets_path}8-tile.png"))?;
+    let tile_16_texture =
+        texture_creator.load_texture(format!("{tiles_assets_path}16-tile.png"))?;
+    let tile_32_texture =
+        texture_creator.load_texture(format!("{tiles_assets_path}32-tile.png"))?;
+    let tile_64_texture =
+        texture_creator.load_texture(format!("{tiles_assets_path}64-tile.png"))?;
+    let tile_128_texture =
+        texture_creator.load_texture(format!("{tiles_assets_path}128-tile.png"))?;
+    let tile_256_texture =
+        texture_creator.load_texture(format!("{tiles_assets_path}256-tile.png"))?;
+    let tile_512_texture =
+        texture_creator.load_texture(format!("{tiles_assets_path}512-tile.png"))?;
+    let tile_1024_texture =
+        texture_creator.load_texture(format!("{tiles_assets_path}1024-tile.png"))?;
+    let tile_2048_texture =
+        texture_creator.load_texture(format!("{tiles_assets_path}2048-tile.png"))?;
 
     let canvas_width = canvas.viewport().width();
 
