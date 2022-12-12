@@ -31,19 +31,24 @@ fn main() -> Result<(), String> {
     let sdl_context = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
 
-    let window = video_subsystem
-        .window("2048", WINDOW_WIDTH, WINDOW_HEIGHT)
-        .position_centered()
-        .opengl()
-        .allow_highdpi()
-        .build()
-        .map_err(|e| e.to_string())?;
+    let mut is_high_dpi = false;
+    let mut binding = video_subsystem.window("2048", WINDOW_WIDTH, WINDOW_HEIGHT);
+    let mut window_builder = binding.position_centered().opengl();
+
+    let (ddpi, _, _) = video_subsystem.display_dpi(0)?;
+    if ddpi > 96.0 {
+        window_builder = window_builder.allow_highdpi();
+        is_high_dpi = true;
+    }
+
+    let window = window_builder.build().map_err(|e| e.to_string())?;
 
     let mut canvas = window.into_canvas().build().map_err(|e| e.to_string())?;
     let texture_creator = canvas.texture_creator();
     let ttf_context = sdl2::ttf::init().map_err(|e| e.to_string())?;
     let _image_context = sdl2::image::init(InitFlag::PNG | InitFlag::JPG)?;
-    let font = ttf_context.load_font(FONT_NAME, 64).unwrap();
+    let font_size = if is_high_dpi { 64 } else { 32 };
+    let font = ttf_context.load_font(FONT_NAME, font_size).unwrap();
     // End of initialization
 
     let game = game::Game2048::new();
@@ -67,10 +72,10 @@ fn main() -> Result<(), String> {
 
     let canvas_width = canvas.viewport().width();
 
-    let (tile_x_1, tile_y_1) = calc_rectangle_position(0, 0, canvas_width);
-    let (tile_x_2, tile_y_2) = calc_rectangle_position(1, 1, canvas_width);
-    let (tile_x_3, tile_y_3) = calc_rectangle_position(2, 2, canvas_width);
-    let (tile_x_4, tile_y_4) = calc_rectangle_position(3, 3, canvas_width);
+    let (tile_x_1, tile_y_1) = calc_rectangle_position(0, 0, canvas_width, is_high_dpi);
+    let (tile_x_2, tile_y_2) = calc_rectangle_position(1, 1, canvas_width, is_high_dpi);
+    let (tile_x_3, tile_y_3) = calc_rectangle_position(2, 2, canvas_width, is_high_dpi);
+    let (tile_x_4, tile_y_4) = calc_rectangle_position(3, 3, canvas_width, is_high_dpi);
 
     let tile00_rectangle = rect!(tile_x_1, tile_y_1, SQUARE_SIZE, SQUARE_SIZE);
     let tile01_rectangle = rect!(tile_x_1, tile_y_2, SQUARE_SIZE, SQUARE_SIZE);
@@ -168,14 +173,19 @@ fn create_text<'tc>(
     (texture, rectangle)
 }
 
-fn calc_rectangle_position(x: u32, y: u32, canvas_width: u32) -> (u32, u32) {
-    let top_margin = 150;
-    let margin = 16;
-    let field_length = (SQUARE_SIZE * 4) + (margin * 3);
+fn calc_rectangle_position(x: u32, y: u32, canvas_width: u32, is_high_dpi: bool) -> (u32, u32) {
+    let top_margin = if is_high_dpi { 160 } else { 70 };
+    let margin = if is_high_dpi { 16 } else { 10 };
+    let square_size = if is_high_dpi {
+        SQUARE_SIZE
+    } else {
+        SQUARE_SIZE / 2
+    };
+    let field_length = (square_size * 4) + (margin * 3);
     let left_first = (canvas_width - field_length) / 2;
 
-    let x_output = left_first + (x * (SQUARE_SIZE + margin));
-    let y_output = top_margin + (y * (SQUARE_SIZE + margin));
+    let x_output = left_first + (x * (square_size + margin));
+    let y_output = top_margin + (y * (square_size + margin));
 
     (x_output, y_output)
 }
