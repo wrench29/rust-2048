@@ -83,6 +83,8 @@ fn main() -> Result<(), String> {
         texture_creator.load_texture(format!("{tiles_assets_path}1024-tile.png"))?;
     let tile_2048_texture =
         texture_creator.load_texture(format!("{tiles_assets_path}2048-tile.png"))?;
+    let tiles_background_texture =
+        texture_creator.load_texture(format!("{tiles_assets_path}tiles_background.png"))?;
 
     let canvas_width = canvas.viewport().width();
 
@@ -117,6 +119,8 @@ fn main() -> Result<(), String> {
     let tile32_rectangle = rect!(tile_x_4, tile_y_3, square_size, square_size);
     let tile33_rectangle = rect!(tile_x_4, tile_y_4, square_size, square_size);
 
+    let tiles_background_rectangle = calc_tiles_background_rectangle(canvas_width, is_high_dpi);
+
     let mut event_pump = sdl_context.event_pump()?;
     'running: loop {
         for event in event_pump.poll_iter() {
@@ -139,6 +143,8 @@ fn main() -> Result<(), String> {
         canvas.clear();
 
         canvas.copy(&texture, None, rectangle)?;
+
+        canvas.copy(&tiles_background_texture, None, tiles_background_rectangle)?;
 
         canvas.copy(&tile_2_texture, None, tile00_rectangle)?;
         canvas.copy(&tile_4_texture, None, tile01_rectangle)?;
@@ -208,4 +214,25 @@ fn calc_rectangle_position(x: u32, y: u32, canvas_width: u32, is_high_dpi: bool)
     let y_output = top_margin + (y * (square_size + margin));
 
     (x_output, y_output)
+}
+
+fn calc_tiles_background_rectangle(canvas_width: u32, is_high_dpi: bool) -> Rect {
+    let tiles_background_square_size = if is_high_dpi { 720 } else { 370 };
+    let square_size = if is_high_dpi {
+        SQUARE_SIZE
+    } else {
+        SQUARE_SIZE / 2
+    };
+
+    let margin = if is_high_dpi { 16 } else { 10 };
+    let field_length = (square_size * 4) + (margin * 3);
+    let top_margin = (if is_high_dpi { 160 } else { 70 }) - margin;
+    let left_first = ((canvas_width - field_length) / 2) - margin;
+
+    rect!(
+        left_first,
+        top_margin,
+        tiles_background_square_size,
+        tiles_background_square_size
+    )
 }
